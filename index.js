@@ -26,6 +26,7 @@ async function run() {
     await client.connect();
 
     const userCollection = client.db("hostelmaniaDB").collection("users");
+    const menuCollection = client.db("hostelmaniaDB").collection("menu");
 
     // jwt related api
     app.post("/jwt", async (req, res) => {
@@ -106,6 +107,25 @@ async function run() {
         }
       }
       const result = await userCollection.updateOne(filter, updatedDoc);
+      res.send(result);
+    })
+
+    //menu related apis
+    app.get('/menu', async (req, res) => {
+      const result = await menuCollection.find().toArray();
+      res.send(result);
+    })
+
+    app.post('/menu', verifyToken, verifyAdmin, async(req, res)=>{
+      const item = req.body;
+      const result = await menuCollection.insertOne(item);
+      res.send(result);
+    })
+
+    app.delete('/menu/:id', verifyToken, verifyAdmin, async(req, res)=>{
+      const id = req.params.id;
+      const query = {_id: new ObjectId(id)};
+      const result = await menuCollection.deleteOne(query);
       res.send(result);
     })
 
