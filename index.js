@@ -152,6 +152,16 @@ async function run() {
       res.send(result);
     })
 
+    app.patch('/like/:id', async(req, res)=>{
+      const id = req.params.id;
+      const updateDoc = {
+        $inc: { like: 1 },
+      }
+      const query = { _id: new ObjectId(id) }
+      const likeUpdate = await menuCollection.updateOne(query, updateDoc);
+      res.send(likeUpdate);
+    })
+
     app.delete('/menu/:id', verifyToken, verifyAdmin, async(req, res)=>{
       const id = req.params.id;
       const query = {_id: new ObjectId(id)};
