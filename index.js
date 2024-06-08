@@ -27,6 +27,7 @@ async function run() {
 
     const userCollection = client.db("hostelmaniaDB").collection("users");
     const menuCollection = client.db("hostelmaniaDB").collection("menu");
+    const reviewCollection = client.db("hostelmaniaDB").collection("review");
 
     // jwt related api
     app.post("/jwt", async (req, res) => {
@@ -166,6 +167,23 @@ async function run() {
       const id = req.params.id;
       const query = {_id: new ObjectId(id)};
       const result = await menuCollection.deleteOne(query);
+      res.send(result);
+    })
+
+    //review related apis
+    app.get('/reviews', async (req, res) => {
+      const result = await reviewCollection.find().toArray();
+      res.send(result);
+    })
+
+    app.post('/review', async(req, res)=>{
+      const item = req.body;
+      const result = await reviewCollection.insertOne(item);
+      const updateDoc = {
+        $inc: { reviews: 1 },
+      }
+      const query = { _id: new ObjectId(item.id) }
+      const updateReviewCount = await menuCollection.updateOne(query, updateDoc);
       res.send(result);
     })
 
