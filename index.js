@@ -217,6 +217,14 @@ async function run() {
       res.send(result);
     })
 
+    app.get('/requests', async (req, res) => {
+      const email = req.query.email;
+      const query = {email: email}
+      const result = await requestCollection.find(query).toArray();
+      console.log(query);
+      res.send(result);
+    })
+
     app.post('/mealrequest', async(req, res)=>{
       const item = req.body;
       const result = await requestCollection.insertOne(item);
@@ -235,6 +243,12 @@ async function run() {
       res.send(result);
     })
 
+    app.delete('/requests/:id', verifyToken, async(req, res)=>{
+      const id = req.params.id;
+      const query = {_id: new ObjectId(id)};
+      const result = await requestCollection.deleteOne(query);
+      res.send(result);
+    })
 
 
 
