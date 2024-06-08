@@ -179,7 +179,7 @@ async function run() {
     })
 
     //review related apis
-    app.get('/reviews', async (req, res) => {
+    app.get('/reviews', verifyToken, verifyAdmin, async (req, res) => {
       const result = await reviewCollection.find().toArray();
       res.send(result);
     })
@@ -192,6 +192,13 @@ async function run() {
       }
       const query = { _id: new ObjectId(item.id) }
       const updateReviewCount = await menuCollection.updateOne(query, updateDoc);
+      res.send(result);
+    })
+
+    app.delete('/review/:id', verifyToken, verifyAdmin, async(req, res)=>{
+      const id = req.params.id;
+      const query = {_id: new ObjectId(id)};
+      const result = await reviewCollection.deleteOne(query);
       res.send(result);
     })
 
