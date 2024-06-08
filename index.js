@@ -28,6 +28,7 @@ async function run() {
     const userCollection = client.db("hostelmaniaDB").collection("users");
     const menuCollection = client.db("hostelmaniaDB").collection("menu");
     const reviewCollection = client.db("hostelmaniaDB").collection("review");
+    const requestCollection = client.db("hostelmaniaDB").collection("mealrequests");
 
     // jwt related api
     app.post("/jwt", async (req, res) => {
@@ -193,6 +194,23 @@ async function run() {
       const updateReviewCount = await menuCollection.updateOne(query, updateDoc);
       res.send(result);
     })
+
+
+    //Meal Request related APIs
+    app.get('/mealrequest', async (req, res) => {
+      const result = await requestCollection.find().toArray();
+      res.send(result);
+    })
+
+    app.post('/mealrequest', async(req, res)=>{
+      const item = req.body;
+      const result = await requestCollection.insertOne(item);
+      res.send(result);
+    })
+
+
+
+
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
