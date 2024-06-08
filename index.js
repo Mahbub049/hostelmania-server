@@ -132,6 +132,14 @@ async function run() {
       res.send(result);
     })
 
+    app.get('/fooditem/:email', async (req, res) => {
+      const email = req.params.email;
+      const query = {email: email}
+      const result = await menuCollection.find(query).toArray();
+      res.send(result);
+    })
+
+
     app.post('/menu', verifyToken, verifyAdmin, async(req, res)=>{
       const item = req.body;
       const result = await menuCollection.insertOne(item);
@@ -212,6 +220,18 @@ async function run() {
     app.post('/mealrequest', async(req, res)=>{
       const item = req.body;
       const result = await requestCollection.insertOne(item);
+      res.send(result);
+    })
+
+    app.patch('/mealrequest/:id', verifyToken, verifyAdmin, async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const updatedDoc = {
+        $set: {
+          status: 'delivered'
+        }
+      }
+      const result = await requestCollection.updateOne(filter, updatedDoc);
       res.send(result);
     })
 
