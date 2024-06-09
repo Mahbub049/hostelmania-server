@@ -29,6 +29,7 @@ async function run() {
     const menuCollection = client.db("hostelmaniaDB").collection("menu");
     const reviewCollection = client.db("hostelmaniaDB").collection("review");
     const requestCollection = client.db("hostelmaniaDB").collection("mealrequests");
+    const upcomingCollection = client.db("hostelmaniaDB").collection("upcomingMeals");
 
     // jwt related api
     app.post("/jwt", async (req, res) => {
@@ -279,6 +280,17 @@ async function run() {
     })
 
 
+    //Upcoming Meals APIs
+    app.get('/upcomingMeals', async (req, res) => {
+      const result = await upcomingCollection.find().toArray();
+      res.send(result);
+    })
+
+    app.post('/upcomingMeals', verifyToken, verifyAdmin, async(req, res)=>{
+      const item = req.body;
+      const result = await upcomingCollection.insertOne(item);
+      res.send(result);
+    })
 
 
     // Send a ping to confirm a successful connection
