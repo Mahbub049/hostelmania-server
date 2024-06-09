@@ -286,10 +286,27 @@ async function run() {
       res.send(result);
     })
 
+    app.get('/upcomingMeals/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = {_id: new ObjectId(id)}
+      const result = await upcomingCollection.findOne(query);
+      res.send(result);
+    })
+
     app.post('/upcomingMeals', verifyToken, verifyAdmin, async(req, res)=>{
       const item = req.body;
       const result = await upcomingCollection.insertOne(item);
       res.send(result);
+    })
+
+    app.patch('/upcomingLike/:id', async(req, res)=>{
+      const id = req.params.id;
+      const updateDoc = {
+        $inc: { like: 1 },
+      }
+      const query = { _id: new ObjectId(id) }
+      const likeUpdate = await upcomingCollection.updateOne(query, updateDoc);
+      res.send(likeUpdate);
     })
 
     app.delete('/upcomingMeals/:id', verifyToken, verifyAdmin, async(req, res)=>{
