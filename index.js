@@ -122,7 +122,7 @@ async function run() {
 
     //menu related apis
     app.get('/menu', async (req, res) => {
-      const result = await menuCollection.find().toArray();
+      const result = await menuCollection.find().sort({"like":-1, "reviews":-1}).toArray();
       res.send(result);
     })
 
@@ -282,7 +282,7 @@ async function run() {
 
     //Upcoming Meals APIs
     app.get('/upcomingMeals', async (req, res) => {
-      const result = await upcomingCollection.find().toArray();
+      const result = await upcomingCollection.find().sort({"like":-1}).toArray();
       res.send(result);
     })
 
