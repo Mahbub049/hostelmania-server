@@ -31,6 +31,7 @@ async function run() {
     const reviewCollection = client.db("hostelmaniaDB").collection("review");
     const requestCollection = client.db("hostelmaniaDB").collection("mealrequests");
     const upcomingCollection = client.db("hostelmaniaDB").collection("upcomingMeals");
+    const paymentCollection = client.db("hostelmaniaDB").collection("payments");
 
     // jwt related api
     app.post("/jwt", async (req, res) => {
@@ -335,6 +336,33 @@ async function run() {
         clientSecret: paymentIntent.client_secret
       })
     });
+
+    app.post('/payments', async (req, res) => {
+      const payment = req.body;
+      const paymentResult = await paymentCollection.insertOne(payment);
+
+      //  carefully delete each item from the cart
+      console.log('payment info', payment);
+      // const query = {
+      //   _id: {
+      //     $in: payment.cartIds.map(id => new ObjectId(id))
+      //   }
+      // };
+
+      // const deleteResult = await cartCollection.deleteMany(query);
+
+      const id = payment.userId;
+      const badge = payment.packageName;
+      const filter = {_id: new ObjectId(id)};
+      const updatedDoc = {
+        $set: {
+          badge: badge
+        }
+      }
+      const result = await userCollection.updateOne(filter, updatedDoc);
+
+      res.send({ paymentResult, result});
+    })
 
 
     // Send a ping to confirm a successful connection
