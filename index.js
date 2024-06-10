@@ -340,17 +340,7 @@ async function run() {
     app.post('/payments', async (req, res) => {
       const payment = req.body;
       const paymentResult = await paymentCollection.insertOne(payment);
-
-      //  carefully delete each item from the cart
       console.log('payment info', payment);
-      // const query = {
-      //   _id: {
-      //     $in: payment.cartIds.map(id => new ObjectId(id))
-      //   }
-      // };
-
-      // const deleteResult = await cartCollection.deleteMany(query);
-
       const id = payment.userId;
       const badge = payment.packageName;
       const filter = {_id: new ObjectId(id)};
@@ -360,8 +350,14 @@ async function run() {
         }
       }
       const result = await userCollection.updateOne(filter, updatedDoc);
-
       res.send({ paymentResult, result});
+    })
+
+    app.get('/payments/:email', async (req, res) => {
+      const email = req.params.email;
+      const query = {email: email}
+      const result = await paymentCollection.findOne(query);
+      res.send(result);
     })
 
 
