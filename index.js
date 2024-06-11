@@ -71,9 +71,23 @@ async function run() {
 
     //User related apis
     app.get("/users", verifyToken, async (req, res) => {
-      const result = await userCollection.find().toArray();
+      const search = req.query.search;
+      console.log(search)
+      let query = {
+        name: { $regex: search, $options: 'i' },
+      }
+      const result = await userCollection.find(query).toArray();
       res.send(result);
     });
+
+    // app.get("/user/:search", verifyToken, async (req, res) => {
+    //   const search = req.params.search;
+    //   let query = {
+    //     name: { $regex: search, $options: 'i' },
+    //   }
+    //   const result = await userCollection.find(query).toArray();
+    //   res.send(result);
+    // });
 
     app.get('/users/:email', async (req, res) => {
       const email = req.params.email;
@@ -124,7 +138,11 @@ async function run() {
 
     //menu related apis
     app.get('/menu', async (req, res) => {
-      const result = await menuCollection.find().sort({"like":-1, "reviews":-1}).toArray();
+      const filter = req.query.filter;
+      console.log(filter)
+      let query = {};
+      if (filter) query.category = filter;
+      const result = await menuCollection.find(query).sort({"like":-1, "reviews":-1}).toArray();
       res.send(result);
     })
 
@@ -337,7 +355,7 @@ async function run() {
       })
     });
 
-    app.post('/payments', async (req, res) => {
+    app.post('/payments', verifyToken, async (req, res) => {
       const payment = req.body;
       const paymentResult = await paymentCollection.insertOne(payment);
       console.log('payment info', payment);
@@ -353,7 +371,7 @@ async function run() {
       res.send({ paymentResult, result});
     })
 
-    app.get('/payments/:email', async (req, res) => {
+    app.get('/payments/:email', verifyToken, async (req, res) => {
       const email = req.params.email;
       const query = {email: email}
       const result = await paymentCollection.findOne(query);
