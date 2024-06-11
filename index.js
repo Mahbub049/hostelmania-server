@@ -37,6 +37,10 @@ async function run() {
       .collection("upcomingMeals");
     const paymentCollection = client.db("hostelmaniaDB").collection("payments");
 
+    // menuCollection.createIndex({ foodname: 'text' })
+    // .then(() => console.log('Index created on name field'))
+    // .catch(err => console.error('Failed to create index:', err));
+
     // jwt related api
     app.post("/jwt", async (req, res) => {
       const user = req.body;
@@ -75,7 +79,7 @@ async function run() {
 
     //User related apis
     app.get("/users", verifyToken, async (req, res) => {
-      const search = req.query.search;
+      const search = req.query.search || "";
       console.log(search);
       let query = {
         $or: [
@@ -149,10 +153,34 @@ async function run() {
 
     //menu related apis
     app.get("/menu", async (req, res) => {
-      const filter = req.query.filter;
-      console.log(filter);
-      let query = {};
+      const filter = req.query.filter || "";
+      const search = req.query.search || "";
+
+      let query = {
+        // foodname: { $regex: search, $options: "i" },
+      };
+
+      query.$or = [
+        { foodname: { $regex: search, $options: 'i' } },
+        { category: { $regex: search, $options: 'i' } },
+        { ingredients: { $regex: search, $options: 'i' } },
+        { description: { $regex: search, $options: 'i' } }
+      ];
+
       if (filter) query.category = filter;
+
+      const minPrice = parseFloat(req.query.minPrice) || 0;
+      const maxPrice = parseFloat(req.query.maxPrice);
+      if (!isNaN(minPrice) || !isNaN(maxPrice)) {
+        query.price = {};
+        if (!isNaN(minPrice)) {
+          query.price.$gte = minPrice;
+        }
+        if (!isNaN(maxPrice)) {
+          query.price.$lte = maxPrice;
+        }
+      }
+
       const result = await menuCollection
         .find(query)
         .sort({ like: -1, reviews: -1 })
@@ -277,7 +305,7 @@ async function run() {
 
     //Meal Request related APIs
     app.get("/mealrequest", async (req, res) => {
-      const search = req.query.search;
+      const search = req.query.search || "";
       let query = {
         $or: [
           { name: { $regex: search, $options: "i" } },
