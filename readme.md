@@ -3,6 +3,7 @@
 - **Admin Username:** admin@gmail.com
 - **Admin Password:** admin1234
 - **Live Site URL:** [https://hostelmaniabd.web.app/](https://hostelmaniabd.web.app/)
+- **Server Site URL:** [https://hostelmania-server.vercel.app/](https://hostelmania-server.vercel.app/)
 
 ## Features of HostelMania
 
@@ -23,8 +24,8 @@
 ## Additional Sections
 
 ### 1. Contact Us
-Contact information about the HostelMania are provided in the homepage with category wise meal review
 
+Contact information about the HostelMania are provided in the homepage with category wise meal review
 
 ## Technology Stack
 
@@ -34,4 +35,3 @@ Contact information about the HostelMania are provided in the homepage with cate
 - **State Management:** Context API, TanStack Query
 - **Payment Integration:** Stripe
 - **Form Handling:** react-hook-form
-
