@@ -24,7 +24,7 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
-    await client.connect();
+    // await client.connect();
 
     const userCollection = client.db("hostelmaniaDB").collection("users");
     const menuCollection = client.db("hostelmaniaDB").collection("menu");
@@ -80,7 +80,6 @@ async function run() {
     //User related apis
     app.get("/users", verifyToken, async (req, res) => {
       const search = req.query.search || "";
-      console.log(search);
       let query = {
         $or: [
           { name: { $regex: search, $options: "i" } },
@@ -278,7 +277,6 @@ async function run() {
     app.patch("/myreviews/:id", async (req, res) => {
       const id = req.params.id;
       const data = req.body;
-      console.log(data, id);
       const filter = { _id: new ObjectId(id) };
       const updatedDoc = {
         $set: {
@@ -403,7 +401,6 @@ async function run() {
     app.post("/create-payment-intent", async (req, res) => {
       const { price } = req.body;
       const amount = parseInt(price * 100);
-      console.log(amount, "amount inside the intent");
 
       const paymentIntent = await stripe.paymentIntents.create({
         amount: amount,
@@ -419,7 +416,6 @@ async function run() {
     app.post("/payments", verifyToken, async (req, res) => {
       const payment = req.body;
       const paymentResult = await paymentCollection.insertOne(payment);
-      console.log("payment info", payment);
       const id = payment.userId;
       const badge = payment.packageName;
       const filter = { _id: new ObjectId(id) };
@@ -435,15 +431,15 @@ async function run() {
     app.get("/payments/:email", verifyToken, async (req, res) => {
       const email = req.params.email;
       const query = { email: email };
-      const result = await paymentCollection.findOne(query);
+      const result = await paymentCollection.find(query).toArray();
       res.send(result);
     });
 
     // Send a ping to confirm a successful connection
-    await client.db("admin").command({ ping: 1 });
-    console.log(
-      "Pinged your deployment. You successfully connected to MongoDB!"
-    );
+    // await client.db("admin").command({ ping: 1 });
+    // console.log(
+    //   "Pinged your deployment. You successfully connected to MongoDB!"
+    // );
   } finally {
     // Ensures that the client will close when you finish/error
     // await client.close();
